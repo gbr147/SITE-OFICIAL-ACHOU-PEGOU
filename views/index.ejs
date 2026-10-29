@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Achou? Pegou!</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #121212; color: #f5f5f5; margin: 0; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        header { background: #1e1e1e; border: 2px solid #ff6600; padding: 20px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .logo { display: flex; align-items: center; gap: 10px; }
+        .logo-txt { font-size: 2rem; font-weight: 900; text-transform: uppercase; margin: 0; }
+        .logo-txt span { color: #ff6600; }
+        .nav-btn { text-decoration: none; background: #ff6600; color: #000; padding: 10px 18px; border-radius: 6px; font-weight: bold; }
+        .grid { display: grid; grid-template-columns: 1fr 2fr; gap: 25px; }
+        .card { background: #1e1e1e; padding: 20px; border-radius: 8px; border: 1px solid #2d2d2d; height: fit-content; }
+        input, textarea, button { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #333; background: #121212; color: #fff; border-radius: 6px; box-sizing: border-box; }
+        input:focus, textarea:focus { border-color: #ff6600; outline: none; }
+        button { background: #ff6600; color: #000; border: none; font-weight: 800; cursor: pointer; text-transform: uppercase; }
+        .post { background: #1e1e1e; padding: 20px; margin-bottom: 20px; border-radius: 8px; border-left: 5px solid #ff6600; }
+        .post h2 { margin: 0 0 10px 0; }
+        .post img { max-width: 100%; max-height: 300px; border-radius: 6px; margin-top: 15px; display: block; }
+        .meta { font-size: 0.85rem; color: #888; margin-bottom: 10px; }
+        .actions { margin-top: 20px; display: flex; gap: 15px; }
+        .btn-act { text-decoration: none; padding: 8px 16px; border-radius: 4px; font-weight: 700; font-size: 0.9rem; }
+        .btn-c { background: #2d2d2d; color: #fff; }
+        .btn-d { background: rgba(255,102,0,0.15); color: #ff6600; border: 1px solid #ff6600; }
+        @media(max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <span style="font-size: 2.2rem;">👀</span>
+                <h1 class="logo-txt">Achou? <span>Pegou!</span></h1>
+            </div>
+            <% if (usuarioLogado) { %>
+                <div>
+                    <a href="/painel" class="nav-btn" style="background:#2d2d2d; color:white; margin-right:10px;">Meu Painel</a>
+                    <a href="/sair" class="nav-btn" style="background:#cc0000; color:white;">Sair</a>
+                </div>
+            <% } else { %>
+                <a href="/login" class="nav-btn">Entrar / Criar Conta</a>
+            <% } %>
+        </header>
+
+        <div class="grid">
+            <div class="card">
+                <h3 style="color:#ff6600; margin-top:0;">Desprender Novo Item</h3>
+                <% if (usuarioLogado) { %>
+                    <form action="/post/novo" method="POST" enctype="multipart/form-data">
+                        <input type="text" name="titulo" placeholder="Título (Ex: Guarda-chuva Azul)" required>
+                        <textarea name="descricao" rows="4" placeholder="Detalhes cruciais do achado ou perda..." required></textarea>
+                        <input type="file" name="imagem" accept="image/*">
+                        <button type="submit">Publicar no Feed</button>
+                    </form>
+                <% } else { %>
+                    <p style="color:#aaa; text-align:center;">Você precisa estar logado para publicar anúncios.</p>
+                    <a href="/login" class="nav-btn" style="display:block; text-align:center;">Logar Agora</a>
+                <% } %>
+            </div>
+
+            <div>
+                <h3 style="color:#ff6600; margin-top:0;">🔍 Feed Ativo de Achados e Perdidos</h3>
+                <% if(posts.length === 0) { %>
+                    <p style="color:#666; text-align:center; margin-top:40px;">Nenhum item relatado publicamente no momento.</p>
+                <% } %>
+                <% posts.slice().reverse().forEach(post => { %>
+                    <div class="post">
+                        <h2><%= post.titulo %></h2>
+                        <div class="meta">Postado por: <strong><%= post.autorNome %></strong></div>
+                        <p><%= post.descricao %></p>
+                        <% if(post.imagem) { %> <img src="<%= post.imagem %>"> <% } %>
+                        <div class="actions">
+                            <a class="btn-act btn-c" href="/item/<%= post.id %>-<%= post.slug %>">💬 Respostas (<%= post.comentarios.length %>)</a>
+                            <% if(usuarioLogado && usuarioLogado.email !== post.autorEmail) { %>
+                                <a class="btn-act btn-d" href="/chat?para=<%= post.autorNome %>">✉ Conversar no Privado</a>
+                            <% } %>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

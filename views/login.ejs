@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Acesso - Achou? Pegou!</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #121212; color: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .auth-container { background: #1e1e1e; border: 1px solid #333; padding: 30px; border-radius: 12px; width: 100%; max-width: 400px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .tabs { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .tab-btn { background: transparent; border: none; color: #888; font-size: 1.1rem; cursor: pointer; padding: 5px 10px; font-weight: bold; }
+        .tab-btn.active { color: #ff6600; border-bottom: 2px solid #ff6600; }
+        input, button { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #333; background: #121212; color: white; border-radius: 6px; box-sizing: border-box; }
+        input:focus { border-color: #ff6600; outline: none; }
+        button { background: #ff6600; color: #000; font-weight: bold; text-transform: uppercase; border: none; cursor: pointer; margin-top: 5px; }
+        .err { background: rgba(204,0,0,0.2); border: 1px solid #cc0000; color: #ff9999; padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div style="text-align:center; margin-bottom:20px;"><a href="/" style="color:#888; text-decoration:none; font-size:0.9rem;">← Voltar ao início</a></div>
+        
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchForm('login')">Entrar</button>
+            <button class="tab-btn" onclick="switchForm('cadastro')">Criar Conta</button>
+        </div>
+
+        <% if(msgErro) { %> <div class="err"><%= msgErro %></div> <% } %>
+
+        <!-- Formulário de Login -->
+        <form id="form-login" action="/login" method="POST">
+            <input type="email" name="email" placeholder="Seu E-mail" required>
+            <input type="password" name="senha" placeholder="Sua Senha" required>
+            <button type="submit">Acessar Painel</button>
+        </form>
+
+        <!-- Formulário de Cadastro -->
+        <form id="form-cadastro" action="/cadastro" method="POST" style="display: none;">
+            <input type="text" name="nome" placeholder="Nome Completo" required>
+            <input type="email" name="email" placeholder="E-mail de Acesso" required>
+            <input type="password" name="senha" placeholder="Crie uma Senha" required>
+            <button type="submit">Cadastrar Perfil</button>
+        </form>
+    </div>
+
+    <script>
+        function switchForm(tipo) {
+            const btnL = document.querySelectorAll('.tab-btn')[0];
+            const btnC = document.querySelectorAll('.tab-btn')[1];
+            if(tipo === 'login') {
+                document.getElementById('form-login').style.display = 'block';
+                document.getElementById('form-cadastro').style.display = 'none';
+                btnL.classList.add('active'); btnC.classList.remove('active');
+            } else {
+                document.getElementById('form-login').style.display = 'none';
+                document.getElementById('form-cadastro').style.display = 'block';
+                btnL.classList.remove('active'); btnC.classList.add('active');
+            }
+        }
+    </script>
+</body>
+</html>

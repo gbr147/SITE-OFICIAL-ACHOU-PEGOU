@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Minha Conta - Achou? Pegou!</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #121212; color: #fff; padding: 20px; }
+        .box { max-width: 900px; margin: 0 auto; background: #1e1e1e; padding: 30px; border-radius: 12px; border: 1px solid #333; }
+        .header-p { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ff6600; padding-bottom: 15px; margin-bottom: 25px; }
+        .secao { background:#121212; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #2d2d2d; }
+        h3 { color: #ff6600; margin-top: 0; }
+        .msg-line { display: flex; justify-content: space-between; background: #1e1e1e; padding: 12px; border-radius: 6px; margin-bottom: 8px; border-left: 4px solid #ff6600; }
+        .badge-nova { background: #ff6600; color: #000; font-weight: bold; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; }
+        .danger-zone { border: 1px dashed #cc0000; padding: 20px; border-radius: 8px; margin-top: 4px; }
+        .btn-danger { background: #cc0000; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <div class="header-p">
+            <h2>Olá, <%= usuarioLogado.nome %>! <span style="font-size:1.1rem; color:#888;">(Perfil logado)</span></h2>
+            <a href="/" style="color:#ff6600; font-weight:bold; text-decoration:none;">Voltar para o Feed</a>
+        </div>
+
+        <!-- SEÇÃO: MENSAGENS -->
+        <div class="secao">
+            <h3>✉ Caixa de Mensagens Diretas</h3>
+            <% 
+                let chatsUnicos = [];
+                minhasMensagens.forEach(m => {
+                    let oponente = m.de === usuarioLogado.nome ? m.para : m.de;
+                    if(!chatsUnicos.includes(oponente)) chatsUnicos.push(oponente);
+                });
+            %>
+            <% if(chatsUnicos.length === 0) { %>
+                <p style="color:#666;">Você não iniciou nem recebeu conversas privadas.</p>
+            <% } %>
+            <% chatsUnicos.forEach(op => { 
+                let ultMsg = minhasMensagens.filter(m => m.de === op || m.para === op).pop();
+                let temNova = minhasMensagens.some(m => m.de === op && m.para === usuarioLogado.nome && !m.lida);
+            %>
+                <div class="msg-line">
+                    <div>
+                        <strong><%= op %></strong>: <span style="color:#aaa;"><%= ultMsg.texto %></span>
+                        <% if(temNova) { %> <span class="badge-nova">NOVA</span> <% } %>
+                    </div>
+                    <a href="/chat?para=<%= op %>" style="color:#ff6600; text-decoration:none; font-weight:bold;">Abrir Chat ➔</a>
+                </div>
+            <% }) %>
+        </div>
+
+        <!-- SEÇÃO: POSTS POSTADOS -->
+        <div class="secao">
+            <h3>📋 Meus Itens Anunciados</h3>
+            <% if(meusPosts.length === 0) { %>
+                <p style="color:#666;">Você ainda não registrou nenhum item perdido ou achado.</p>
+            <% } %>
+            <% meusPosts.forEach(p => { %>
+                <div style="background:#1e1e1e; padding:10px 15px; border-radius:6px; margin-bottom:8px; display:flex; justify-content:space-between;">
+                    <span><%= p.titulo %></span>
+                    <a href="/item/<%= p.id %>-<%= p.slug %>" style="color:#ff6600; text-decoration:none;">Ver no Feed</a>
+                </div>
+            <% }) %>
+        </div>
+
+        <!-- CONFIGURAÇÕES DE CONTA -->
+        <div class="danger-zone">
+            <h3 style="color:#cc0000;">⚠️ Zona Crítica</h3>
+            <p style="color:#aaa; font-size:0.9rem; margin-bottom:15px;">Ao excluir sua conta, todas as suas mensagens e posts serão removidos imediatamente dos nossos servidores de forma permanente.</p>
+            <form action="/usuario/excluir" method="POST" onsubmit="return confirm('Deseja realmente apagar e encerrar esta conta para sempre?');">
+                <button type="submit" class="btn-danger">Excluir Conta Permanentemente</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Mensagem Direta</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #121212; color: #fff; padding: 20px; }
+        .chat-box { max-width: 500px; margin: 0 auto; background: #1e1e1e; border-radius: 12px; border: 1px solid #333; display: flex; flex-direction: column; height: 550px; overflow: hidden; }
+        .chat-header { background: #ff6600; color: #000; padding: 15px; text-align: center; font-weight: bold; }
+        .messages { flex: 1; padding: 20px; overflow-y: auto; background: #151515; }
+        .msg { margin-bottom: 15px; padding: 12px 16px; border-radius: 8px; max-width: 78%; word-wrap: break-word; }
+        .msg.me { background: rgba(255, 102, 0, 0.25); color: #fff; border: 1px solid #ff6600; margin-left: auto; border-bottom-right-radius: 0; }
+        .msg.other { background: #2d2d2d; color: #eee; margin-right: auto; border-bottom-left-radius: 0; }
+        .time { display: block; font-size: 0.65rem; color: #aaa; margin-top: 5px; text-align: right; }
+        .chat-footer { padding: 15px; background: #1e1e1e; border-top: 1px solid #333; }
+        form { display: flex; gap: 10px; }
+        input[type="text"] { flex: 1; padding: 12px; border: 1px solid #333; background: #121212; color: #fff; border-radius: 6px; }
+        button { background: #ff6600; color: #000; border: none; padding: 0 20px; border-radius: 6px; font-weight: 900; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="chat-box">
+        <div class="chat-header">
+            <span>Conversa Direta</span><br>
+            <small>Com: <%= para %></small>
+        </div>
+        
+        <div class="messages">
+            <% historico.forEach(m => { %>
+                <div class="msg <%= m.de === de ? 'me' : 'other' %>">
+                    <strong><%= m.de %>:</strong> <%= m.texto %>
+                    <span class="time"><%= m.data %></span>
+                </div>
+            <% }) %>
+        </div>
+
+        <div class="chat-footer">
+            <form action="/chat/enviar" method="POST">
+                <input type="hidden" name="para" value="<%= para %>">
+                <input type="text" name="texto" placeholder="Mensagem segura privada..." required autofocus autocomplete="off">
+                <button type="submit">Enviar</button>
+            </form>
+            <p style="text-align: center; margin: 15px 0 0 0;"><a href="/painel" style="color: #ff6600; font-size: 0.85rem; text-decoration: none; font-weight: bold;">⬅ Voltar ao Meu Painel</a></p>
+        </div>
+    </div>
+</body>
+</html>
